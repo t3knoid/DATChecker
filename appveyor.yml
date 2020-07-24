@@ -1,0 +1,22 @@
+version: 1.0.0.{build}
+image: Visual Studio 2017
+configuration: Release
+platform: Any CPU
+before_build:
+- cmd: nuget restore
+build:
+  project: DATChecker.sln
+  verbosity: minimal
+after_build:
+- cmd: >-
+    copy /y Installer\plugins\*.* packages\NSIS.2.51\tools\plugins\.
+
+    packages\NSIS.2.51\tools\makensis.exe installer\DatChecker.nsi
+artifacts:
+- path: installer\DATChecker_setup.exe
+  name: DATChecker Windows Installer
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: gX7uENpEovQdzscLdFEkic6eRFdekgL5T9Uuo/XIGwq7PSTFqnrka1xi+FTDDnYv
+  prerelease: true
