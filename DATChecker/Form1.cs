@@ -11,16 +11,13 @@ using System.IO;
 using System.Text.RegularExpressions;
 using LoggerLib;
 using DATValidatorLib;
+using static DATValidatorLib.DatValidator;
 
 namespace DatFixer
 {
-    public partial class Form1 : Form, IDatValidator
+    public partial class Form1 : Form
     {
         Logger Log = new Logger();
-
-        public CompleteDelegate CompleteDelegateCallBack { get => CompleteCallback; }
-        public LoggingDelegate LoggingDelegateCallback { get => LoggingCallback; }
-        public StatusDelegate StatusDelegateCallBack { get => StatusCallback; }
 
         public Form1()
         {
@@ -75,60 +72,8 @@ namespace DatFixer
 
         #endregion
 
-        #region DATValidator callbacks
-        private void StatusCallback(string message, MessageType level)
-        {            
-            if (InvokeRequired) // Make sure to check that if being called from a different thread
-            {
-                this.Invoke(new Action(() =>
-                {
-                    if (tbStatus.Text.Length + message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
-                    {
-                        tbStatus.Clear();
-                    }
-                    if (level == MessageType.ERROR)
-                    {
-                        tbStatus.SelectionColor = Color.Red;
-                    }
-                    tbStatus.AppendText(message + Environment.NewLine);
-                    tbStatus.SelectionColor = Color.Black;
-                }));
-            }
-            else
-            {
-                if (tbStatus.Text.Length + message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
-                {
-                    tbStatus.Clear();
-                }
-                if (level == MessageType.ERROR)
-                {
-                    tbStatus.SelectionColor = Color.Red;
-                }
-                tbStatus.AppendText(message + Environment.NewLine);
-                tbStatus.SelectionColor = Color.Black;
-            }
-            
-        }
-
-        private void LoggingCallback(string message, DATValidatorLib.MessageType level)
-        {
-            switch (level)
-            {
-                case DATValidatorLib.MessageType.ERROR:
-                    LogHelper.Log(LogLevel.ERROR, message);
-                    break;
-                case DATValidatorLib.MessageType.WARNING:
-                    LogHelper.Log(LogLevel.WARNING, message);
-                    break;
-                case DATValidatorLib.MessageType.INFO:
-                    LogHelper.Log(LogLevel.INFO, message);
-                    break;
-            }
-
-        }
-        #endregion
-
         #region Eventhandler
+
         private void tbConcordanceFilePath_TextChanged(object sender, EventArgs e)
         {
             if (File.Exists(@tbConcordanceFilePath.Text))
@@ -189,15 +134,157 @@ namespace DatFixer
             {
                 Worker = worker,
                 DatFile = currentFile,
-                LoggingDelegateCallback = LoggingDelegateCallback,
-                StatusDelegateCallBack = StatusDelegateCallBack
+                
             };
+            datValidator.OnValidateStatus += OnValidateStatus;
+            datValidator.OnValidateError += OnValidateError;
+            datValidator.OnValidateComplete += OnValidateComplete;
             datValidator.Validate();
         }
 
-        private void CompleteCallback(string message)
+        private void OnValidateComplete(object sender, ValidationCompleteEventArgs e)
         {
-            throw new NotImplementedException();
+            if (InvokeRequired) // Make sure to check that if being called from a different thread
+            {
+                this.Invoke(new Action(() =>
+                {
+                    if (tbStatus.Text.Length + e.Message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
+                    {
+                        tbStatus.Clear();
+                    }
+                }));
+            }
+            else
+            {
+                if (tbStatus.Text.Length + e.Message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
+                {
+                    tbStatus.Clear();
+                }
+            }
+
+            switch (e.Status)
+            {
+                case ValidationStatus.FAILED:
+                    {
+                        if (InvokeRequired) // Make sure to check that if being called from a different thread
+                        {
+                            this.Invoke(new Action(() =>
+                            {
+                                tbStatus.SelectionColor = Color.Red;
+                                tbStatus.AppendText(e.Message + Environment.NewLine);
+                                tbStatus.AppendText("Error detected." + Environment.NewLine);
+                                tbStatus.SelectionColor = Color.Black;
+                            }));
+                        }
+                        else
+                        {
+                            tbStatus.SelectionColor = Color.Red;
+                            tbStatus.AppendText(e.Message + Environment.NewLine);
+                            tbStatus.SelectionColor = Color.Black;
+                        }
+
+                        break;
+                    }
+                case ValidationStatus.CANCELLED:
+                    {
+                        if (InvokeRequired) // Make sure to check that if being called from a different thread
+                        {
+                            this.Invoke(new Action(() =>
+                            {
+                                tbStatus.SelectionColor = Color.Yellow;
+                                tbStatus.AppendText(e.Message + Environment.NewLine);
+                                tbStatus.AppendText("Validation cancelled." + Environment.NewLine);
+                                tbStatus.SelectionColor = Color.Black;
+                            }));
+                        }
+                        else
+                        {
+                            tbStatus.SelectionColor = Color.Yellow;
+                            tbStatus.AppendText(e.Message + Environment.NewLine);
+                            tbStatus.SelectionColor = Color.Black;
+                        }
+                        break;
+                    }
+                case ValidationStatus.PASSED:
+                    {
+                        if (InvokeRequired) // Make sure to check that if being called from a different thread
+                        {
+                            this.Invoke(new Action(() =>
+                            {
+                                tbStatus.SelectionColor = Color.Green;
+                                tbStatus.AppendText(e.Message + Environment.NewLine);
+                                tbStatus.AppendText("File is OK." + Environment.NewLine);
+                                tbStatus.SelectionColor = Color.Black;
+                            }));
+                        }
+                        else
+                        {
+                            tbStatus.SelectionColor = Color.Green;
+                            tbStatus.AppendText(e.Message + Environment.NewLine);
+                            tbStatus.SelectionColor = Color.Black;
+                        }
+                        break;
+                    }
+
+            }
+
+        }
+        private void OnValidateError(object sender, ValidationErrorEventArgs e)
+        {
+            if (InvokeRequired) // Make sure to check that if being called from a different thread
+            {
+                this.Invoke(new Action(() =>
+                {
+                    if (tbStatus.Text.Length + e.Message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
+                    {
+                        tbStatus.Clear();
+                    }                   
+                    tbStatus.SelectionColor = Color.Red;
+                    tbStatus.AppendText(e.Message + Environment.NewLine);
+                    if (e.Ex != null)
+                    {
+                        tbStatus.AppendText(e.Ex.StackTrace + Environment.NewLine);
+                    }
+                    tbStatus.SelectionColor = Color.Black;
+                }));
+            }
+            else
+            {
+                if (tbStatus.Text.Length + e.Message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
+                {
+                    tbStatus.Clear();
+                }
+                tbStatus.SelectionColor = Color.Red;
+                tbStatus.AppendText(e.Message + Environment.NewLine);
+                if (e.Ex != null)
+                {
+                    tbStatus.AppendText(e.Ex.StackTrace + Environment.NewLine);
+                }
+                tbStatus.SelectionColor = Color.Black;
+            }
+
+        }
+
+        private void OnValidateStatus(object sender, ValidationStatusEventArgs e)
+        {
+            if (InvokeRequired) // Make sure to check that if being called from a different thread
+            {
+                this.Invoke(new Action(() =>
+                {
+                    if (tbStatus.Text.Length + e.Message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
+                    {
+                        tbStatus.Clear();
+                    }
+                }));
+            }
+            else
+            {
+                if (tbStatus.Text.Length + e.Message.Length > tbStatus.MaxLength) // Make sure we dont store too much text to avoid out of memory error
+                {
+                    tbStatus.Clear();
+                }
+            }
+
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -206,7 +293,6 @@ namespace DatFixer
             btBrowse.Enabled = true;
             tbConcordanceFilePath.Enabled = true;
             Cursor.Current = Cursors.Arrow;
-            StatusCallback("Process complete.", MessageType.INFO);
         }
         #endregion
     }

@@ -43,8 +43,12 @@
     <Compile Include="Constants.cs" />
     <Compile Include="DatValidator.cs" />
     <Compile Include="IDatValidator.cs" />
-    <Compile Include="MessageType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidationCompleteEventArgs.cs" />
+    <Compile Include="ValidationErrorEventArgs.cs" />
+    <Compile Include="ValidationProgressEventArgs.cs" />
+    <Compile Include="ValidationStatus.cs" />
+    <Compile Include="ValidationStatusEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,8 +2,9 @@
 {
     public interface IDatValidator
     {
-        CompleteDelegate CompleteDelegateCallBack { get;  }
-        LoggingDelegate LoggingDelegateCallback { get; }
-        StatusDelegate StatusDelegateCallBack { get; }
+        event DatValidator.ValidationStatusEventHandler OnValidateStatus;
+        event DatValidator.ValidationCompleteEventHandler OnValidateComplete;
+        event DatValidator.ValidationErrorEventHandler OnValidateError;
+        event DatValidator.ValidationProgressEventHandler OnValidateProgress;
     }
 }
