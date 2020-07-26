@@ -121,14 +121,14 @@ namespace DATValidatorLib
                             {
                                 status = ValidationStatus.FAILED;
                                 OnRaiseValidationErrorEvent(new ValidationErrorEventArgs(line));
-                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has wrong field count"));
+                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has wrong field count."));
                             }
                             //Check delimiters                        
                             if (DelimitersOK(fields) == false)
                             {
                                 status = ValidationStatus.FAILED;
                                 OnRaiseValidationErrorEvent(new ValidationErrorEventArgs(line));
-                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has mismatch text qualifier"));
+                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has mismatch text qualifier."));
                             }
                         }
                     }
@@ -146,7 +146,7 @@ namespace DATValidatorLib
                 throw;
             }
 
-            OnRaiseValidationCompleteEvent(new ValidationCompleteEventArgs("Validation Complete",ValidationStatus.PASSED));
+            OnRaiseValidationCompleteEvent(new ValidationCompleteEventArgs("Validation Completed.",status));
         }
 
         /// <summary>

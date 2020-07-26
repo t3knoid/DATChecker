@@ -171,8 +171,7 @@ namespace DatFixer
                             this.Invoke(new Action(() =>
                             {
                                 tbStatus.SelectionColor = Color.Red;
-                                tbStatus.AppendText(e.Message + Environment.NewLine);
-                                tbStatus.AppendText("Error detected." + Environment.NewLine);
+                                tbStatus.AppendText(e.Message + " Error detected." + Environment.NewLine);
                                 tbStatus.SelectionColor = Color.Black;
                             }));
                         }
@@ -192,15 +191,14 @@ namespace DatFixer
                             this.Invoke(new Action(() =>
                             {
                                 tbStatus.SelectionColor = Color.Yellow;
-                                tbStatus.AppendText(e.Message + Environment.NewLine);
-                                tbStatus.AppendText("Validation cancelled." + Environment.NewLine);
+                                tbStatus.AppendText(e.Message + " Validation cancelled." + Environment.NewLine);
                                 tbStatus.SelectionColor = Color.Black;
                             }));
                         }
                         else
                         {
                             tbStatus.SelectionColor = Color.Yellow;
-                            tbStatus.AppendText(e.Message + Environment.NewLine);
+                            tbStatus.AppendText(e.Message + " Validation cancelled." + Environment.NewLine);
                             tbStatus.SelectionColor = Color.Black;
                         }
                         break;
@@ -212,15 +210,14 @@ namespace DatFixer
                             this.Invoke(new Action(() =>
                             {
                                 tbStatus.SelectionColor = Color.Green;
-                                tbStatus.AppendText(e.Message + Environment.NewLine);
-                                tbStatus.AppendText("File is OK." + Environment.NewLine);
+                                tbStatus.AppendText(e.Message + " Completed without error." + Environment.NewLine);
                                 tbStatus.SelectionColor = Color.Black;
                             }));
                         }
                         else
                         {
                             tbStatus.SelectionColor = Color.Green;
-                            tbStatus.AppendText(e.Message + Environment.NewLine);
+                            tbStatus.AppendText(e.Message + " Completed without error." + Environment.NewLine);
                             tbStatus.SelectionColor = Color.Black;
                         }
                         break;
