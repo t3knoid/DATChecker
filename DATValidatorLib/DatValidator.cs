@@ -85,57 +85,63 @@ namespace DATValidatorLib
             string outputDir = Path.GetDirectoryName(datfilePath);
             try
             {
-                if (worker.CancellationPending)
+                if (worker != null)
                 {
-                    status = ValidationStatus.CANCELLED;
-                    OnRaiseValidationStatusEvent(new ValidationStatusEventArgs("Cancel requested."));
-                    return;
+                    if (worker.CancellationPending)
+                    {
+                        status = ValidationStatus.CANCELLED;
+                        OnRaiseValidationStatusEvent(new ValidationStatusEventArgs("Cancel requested."));
+                        return;
+                    }
                 }
                 var lineCount = File.ReadLines(datfilePath).Count();
                 using (var sr = new StreamReader(datfilePath))
                 {
-                    if (!worker.CancellationPending)
+                    if (worker != null)
                     {
-                        // Read header and count
-                        OnRaiseValidationStatusEvent(new ValidationStatusEventArgs("Starting process"));
-                        header = sr.ReadLine();
-                        headerColumns = header.Split(delimiter);
-                        numColumns = headerColumns.Count();
-                        //StatusDelegateCallBack("1 " + header, MessageType.INFO);
-                        // Loop through rest of file
-                        for (int i = 2; i <= lineCount; ++i)
+                        if (worker.CancellationPending)
                         {
-                            OnRaiseProgressEvent(new ValidationProgressEventArgs(i));
+                            status = ValidationStatus.CANCELLED;
+                            OnRaiseValidationStatusEvent(new ValidationStatusEventArgs("Cancel requested."));
+                            return;
+                        }
+                    }
+                    // Read header and count
+                    OnRaiseValidationStatusEvent(new ValidationStatusEventArgs("Starting process"));
+                    header = sr.ReadLine();
+                    headerColumns = header.Split(delimiter);
+                    numColumns = headerColumns.Count();
+                    // Loop through rest of file
+                    for (int i = 2; i <= lineCount; ++i)
+                    {
+                        OnRaiseProgressEvent(new ValidationProgressEventArgs(i));
+                        if (worker != null)
+                        {
                             if (worker.CancellationPending)
                             {
                                 status = ValidationStatus.CANCELLED;
                                 OnRaiseValidationStatusEvent(new ValidationStatusEventArgs("Cancel requested."));
                                 break;
                             }
-                            string line = sr.ReadLine();
-                            //StatusDelegateCallBack(i.ToString() + " " + line, MessageType.INFO);
-                            var fields = line.Split((char)Constants.ASCII020);
-
-                            // Check number of fields
-                            if (numColumns != fields.Count())
-                            {
-                                status = ValidationStatus.FAILED;
-                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs(line));
-                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has wrong field count."));
-                            }
-                            //Check delimiters                        
-                            if (DelimitersOK(fields) == false)
-                            {
-                                status = ValidationStatus.FAILED;
-                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs(line));
-                                OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has mismatch text qualifier."));
-                            }
                         }
-                    }
-                    else
-                    {
-                        status = ValidationStatus.CANCELLED;
-                        OnRaiseValidationStatusEvent(new ValidationStatusEventArgs("Cancel requested."));
+                        string line = sr.ReadLine();
+                        //StatusDelegateCallBack(i.ToString() + " " + line, MessageType.INFO);
+                        var fields = line.Split((char)Constants.ASCII020);
+
+                        // Check number of fields
+                        if (numColumns != fields.Count())
+                        {
+                            status = ValidationStatus.FAILED;
+                            OnRaiseValidationErrorEvent(new ValidationErrorEventArgs(line));
+                            OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has wrong field count."));
+                        }
+                        //Check delimiters                        
+                        if (DelimitersOK(fields) == false)
+                        {
+                            status = ValidationStatus.FAILED;
+                            OnRaiseValidationErrorEvent(new ValidationErrorEventArgs(line));
+                            OnRaiseValidationErrorEvent(new ValidationErrorEventArgs("Line number " + i.ToString() + " has mismatch text qualifier."));
+                        }
                     }
                 }
             }
@@ -145,7 +151,6 @@ namespace DATValidatorLib
                 OnRaiseValidationErrorEvent(new ValidationErrorEventArgs(ex.Message, ex));
                 throw;
             }
-
             OnRaiseValidationCompleteEvent(new ValidationCompleteEventArgs("Validation Completed.",status));
         }
 
