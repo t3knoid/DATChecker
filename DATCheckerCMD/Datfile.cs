@@ -59,9 +59,9 @@ namespace DATCheckerCMD
         private void OnValidateError(object sender, ValidationErrorEventArgs e)
         {  
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write(e.Message);
-            Console.WriteLine(e);
-            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.Ex.StackTrace);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         private void OnValidateStatus(object sender, ValidationStatusEventArgs e)
