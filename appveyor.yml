@@ -4,6 +4,9 @@ configuration: Release
 platform: Any CPU
 before_build:
 - cmd: nuget restore
+skip_commits:
+  files:
+    - README.md
 build:
   project: DATChecker.sln
   verbosity: minimal
