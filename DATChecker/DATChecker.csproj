@@ -85,6 +85,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DATCheckerCMD\DATCheckerCMD.csproj">
+      <Project>{8dd4074b-db19-4151-96cf-b4255e527b60}</Project>
+      <Name>DATCheckerCMD</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DATValidatorLib\DATValidatorLib.csproj">
       <Project>{2e7deb9e-173d-4f6e-b13a-509aa1a79f29}</Project>
       <Name>DATValidatorLib</Name>
