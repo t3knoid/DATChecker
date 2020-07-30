@@ -7,7 +7,7 @@ Visual Studio 2017 is required to build the source. The installer is written usi
 ## Download
 Builds are dynamically created courtesy of Appveyor. Downloads are available int the [releases page](https://github.com/t3knoid/DATChecker/releases).
 
-![Build Status](https://ci.appveyor.com/api/projects/status/github/t3knoid/DATChecker) https://img.shields.io/github/v/tag/t3knoid/DATChecker
+![Build Status](https://ci.appveyor.com/api/projects/status/github/t3knoid/DATChecker) ![Latest build](https://img.shields.io/github/v/tag/t3knoid/DATChecker)
 
 ## Defaults
 Currently DAT Checker assumes the following:
