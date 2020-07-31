@@ -5,7 +5,7 @@ DAT Checker is a Windows form application that checks concordance DAT files.
 Visual Studio 2017 is required to build the source. The installer is written using Nullsoft NSIS script.
 
 ## Download
-Builds are dynamically created courtesy of Appveyor. Downloads are available int the [releases page](https://github.com/t3knoid/DATChecker/releases).
+Builds are dynamically created courtesy of Appveyor. Downloads are available the [releases page](https://github.com/t3knoid/DATChecker/releases).
 
 [![Build status](https://ci.appveyor.com/api/projects/status/0krc1vjswah5179s?svg=true)](https://ci.appveyor.com/project/t3knoid/datchecker) [![Latest build](https://img.shields.io/github/v/tag/t3knoid/DATChecker)](https://github.com/t3knoid/DATChecker/releases)
 
